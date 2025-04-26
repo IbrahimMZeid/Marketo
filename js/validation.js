@@ -1,11 +1,12 @@
-let username = document.getElementById("username");
-let email = document.getElementById("email");
-let password = document.getElementById("password");
+const username = document.getElementById("username");
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+const confirmPassword = document.getElementById("confirm-password");
+const error = document.getElementById("error");
 window.addEventListener("load", function () {
-  if (document.cookie.search("login") != -1) {
+  if (document.cookie.search("login")!= -1) {
     location.href = "index.html";
   }
-  if (location.href.search("register.html") != -1) register();
   addFieldsListener();
 });
 function addUserListener() {
@@ -32,6 +33,22 @@ function addFieldsListener() {
       password.classList.remove("is-invalid");
     }
   });
+  if (username) {
+    username.addEventListener("input", function () {
+      if (!validateUsername(username.value)) {
+        username.classList.add("is-invalid");
+      } else {
+        username.classList.remove("is-invalid");
+      }
+      confirmPassword.addEventListener("input", function () {
+        if (password.value != confirmPassword.value) {
+          confirmPassword.classList.add("is-invalid");
+        } else {
+          confirmPassword.classList.remove("is-invalid");
+        }
+      });
+    });
+  }
 }
 
 function validateEmail(email) {
@@ -51,19 +68,17 @@ function validateUsername(username) {
 
 async function register() {
   let users = JSON.parse(localStorage.getItem("users")) || [];
-  // console.log(users);
-  username.addEventListener("input", function () {
-    if (!validateUsername(username.value)) {
-      username.classList.add("is-invalid");
-    } else {
-      username.classList.remove("is-invalid");
-    }
-  });
-  if (
-    validateUsername(username.value) &&
-    validateEmail(email.value) &&
-    validatePassword(password.value)
-  ) {
+  if (!validateUsername(username.value)) {
+    error.innerText =
+      "\nUsername must be at least 3 characters long starts with a letter and contain only letters, numbers and spaces";
+  } else if (!validateEmail(email.value)) {
+    error.innerText = "\nEmail is not valid";
+  } else if (!validatePassword(password.value)) {
+    error.innerText =
+      "\nPassword must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character";
+  } else if (password.value != confirmPassword.value) {
+    error.innerText = "\nPasswords do not match";
+  } else {
     let foundUser = users.find((user) => user.email == email.value.trim());
     if (foundUser) {
       alert("Email already exists");
@@ -82,7 +97,12 @@ async function register() {
 async function login() {
   const users = JSON.parse(localStorage.getItem("users")) || [];
   let userFound;
-  if (validateEmail(email.value) && validatePassword(password.value)) {
+  if (!validateEmail(email.value)) {
+    error.innerText = "\nEmail is not valid";
+  } else if (!validatePassword(password.value)) {
+    error.innerText =
+      "\nPassword must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character";
+  } else {
     userFound = users.find(
       (user) =>
         user.email == email.value.trim() &&
