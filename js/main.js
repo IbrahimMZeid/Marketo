@@ -12,15 +12,20 @@ window.onload = () => {
   }
   if (document.cookie.search("login") == -1) {
     location.href = "login.html";
-  } else {
+  } else  {
     if (localStorage.getItem("carts")) {
+      if(cart_indicator)
       cart_indicator.style.display = "inline-block";
     }
     if (location.href.search("ourproducts.html") != -1) {
       filterProductsCategory();
       getAllProducts();
-    } else if (location.href.search("index.html") != -1) homeProduct(10);
-    else if (location.href.search("product.html") != -1) displayProduct();
+    } else if (location.href.search("index.html") != -1) {
+      setInterval(() => {
+        nextSlide();
+      }, 3000);
+      homeProduct(10);
+    } else if (location.href.search("product.html") != -1) displayProduct();
     else if (location.href.search("checkout.html") != -1) checkout();
     else if (location.href.search("carts.html") != -1) displayCarts();
   }
@@ -28,6 +33,7 @@ window.onload = () => {
 function logout() {
   let date = new Date();
   date.setDate(date.getDate() - 30);
+  localStorage.removeItem("carts");
   document.cookie = `login=false; expires=${date};`;
   document.cookie = `email=false; expires=${date};`;
   document.cookie = `name=false; expires=${date};`;
@@ -400,7 +406,6 @@ function checkout() {
     location.href = "ourproducts.html";
   } else {
     localStorage.removeItem("carts");
-    cart_indicator.style.display = "none";
   }
 }
 /** =============== add product quantity to cart
