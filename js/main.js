@@ -1,6 +1,15 @@
 let cart_indicator = document.getElementById("cart-count-indicator");
 let slideIndex = 0;
+const loader = document.querySelector(".loader");
 window.onload = () => {
+  if (loader) {
+    setTimeout(() => {
+      loader.style.opacity = 0;
+      setTimeout(() => {
+        loader.classList.add("d-none");
+      }, 1000);
+    }, 200);
+  }
   if (document.cookie.search("login") == -1) {
     location.href = "login.html";
   } else {
@@ -356,7 +365,16 @@ function displayCarts() {
       addToCart(cart, 1);
     });
 
-    quantityContainer.append(reduceBtn, quantity, increaseBtn);
+    const removeBtn = document.createElement("i");
+    removeBtn.classList.add("btn", "text-danger", "bi-trash", "rounded-circle");
+    removeBtn.addEventListener("click", () => {
+      total -= cart.price * cart.quantity;
+      totalPrice.innerText = total;
+      addToCart(cart, -cart.quantity);
+      displayCarts();
+    });
+
+    quantityContainer.append(reduceBtn, quantity, increaseBtn, removeBtn);
     cardBody.append(name, price, quantityContainer);
     row.append(imageContainer, cardBody);
     card.append(row);
